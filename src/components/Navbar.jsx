@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import { MdRestaurant } from "react-icons/md";
@@ -8,8 +8,26 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   const { user, logoutUser, loading } = useContext(AuthContext);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -26,7 +44,10 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-linear-mix shadow-lg sticky top-0 z-50">
+    <nav
+      className="shadow-lg sticky top-0 z-50"
+      style={{ background: "linear-gradient(to right, #d35400, #f1c40f)" }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link
@@ -50,55 +71,104 @@ export default function Navbar() {
             ))}
 
             {user ? (
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center space-x-2 focus:outline-none"
+                  className="flex items-center space-x-2 focus:outline-none group"
                 >
                   {user.photoURL ? (
                     <img
                       src={user.photoURL}
                       alt="User"
-                      className="w-10 h-10 rounded-full border-2 border-white hover:border-yellow-200 transition-colors duration-200"
+                      className="w-10 h-10 rounded-full border-2 border-white hover:border-yellow-200 transition-all duration-300 object-cover transform group-hover:scale-110 group-hover:shadow-lg"
                     />
                   ) : (
-                    <FaUserCircle className="text-white text-4xl hover:text-yellow-200 transition-colors duration-200" />
+                    <FaUserCircle className="text-white text-4xl hover:text-yellow-200 transition-all duration-300 transform group-hover:scale-110" />
                   )}
                 </button>
 
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50">
+                <div
+                  className={`absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl overflow-hidden z-50 transition-all duration-300 origin-top-right ${
+                    isDropdownOpen
+                      ? "opacity-100 scale-100 visible"
+                      : "opacity-0 scale-95 invisible"
+                  }`}
+                >
+                  {/* User Profile Section */}
+                  <div
+                    className="px-4 py-4 transform transition-all duration-300"
+                    style={{
+                      background: "linear-gradient(135deg, #d35400, #f1c40f)",
+                    }}
+                  >
+                    <div className="flex items-center space-x-3">
+                      {user.photoURL ? (
+                        <img
+                          src={user.photoURL}
+                          alt="User"
+                          className="w-12 h-12 rounded-full border-2 border-white object-cover shadow-md"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-md">
+                          <FaUserCircle
+                            className="text-4xl"
+                            style={{ color: "#d35400" }}
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-semibold text-sm truncate">
+                          {user.displayName || "Food Lover"}
+                        </p>
+                        <p className="text-white/90 text-xs truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="py-2">
                     <Link
                       to="/add-review"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-gray-800 hover:bg-orange-100 transition-colors duration-200"
+                      className="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 transition-all duration-200 group transform hover:translate-x-1"
                     >
-                      Add Review
+                      <span className="font-medium group-hover:text-orange-600 transition-colors duration-200">
+                        Add Review
+                      </span>
                     </Link>
                     <Link
                       to="/my-reviews"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-gray-800 hover:bg-orange-100 transition-colors duration-200"
+                      className="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 transition-all duration-200 group transform hover:translate-x-1"
                     >
-                      My Reviews
+                      <span className="font-medium group-hover:text-orange-600 transition-colors duration-200">
+                        My Reviews
+                      </span>
                     </Link>
-                    <hr className="my-2" />
+                  </div>
+
+                  {/* Logout Button */}
+                  <div className="border-t border-gray-200">
                     <button
                       onClick={async () => {
                         await logoutUser();
+                        setIsDropdownOpen(false);
                         navigate("/");
                       }}
-                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200"
+                      className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-all duration-200 font-medium transform hover:translate-x-1"
                     >
                       Logout
                     </button>
                   </div>
-                )}
+                </div>
               </div>
             ) : (
               <Link
                 to="/login"
-                className="bg-white text-orange-500 px-6 py-2 rounded-full font-semibold hover:bg-yellow-200 hover:text-orange-600 transition-all duration-200 shadow-md"
+                className="bg-white px-6 py-2 rounded-full font-semibold hover:bg-yellow-200 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                style={{ color: "#d35400" }}
               >
                 Login
               </Link>
@@ -114,7 +184,7 @@ export default function Navbar() {
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden pb-4">
+          <div className="md:hidden pb-4 animate-slideDown">
             <div className="flex flex-col space-y-3">
               {navLinks.map((link) => (
                 <Link
@@ -130,6 +200,30 @@ export default function Navbar() {
               {user ? (
                 <>
                   <hr className="border-white/30" />
+
+                  {/* Mobile User Profile */}
+                  <div className="flex items-center space-x-3 py-2">
+                    {user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt="User"
+                        className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                      />
+                    ) : (
+                      <FaUserCircle className="text-white text-4xl" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-semibold text-sm truncate">
+                        {user.displayName || "Food Lover"}
+                      </p>
+                      <p className="text-white/90 text-xs truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <hr className="border-white/30" />
+
                   <Link
                     to="/add-review"
                     onClick={closeMenu}
@@ -140,13 +234,14 @@ export default function Navbar() {
                   <Link
                     to="/my-reviews"
                     onClick={closeMenu}
-                    className="text-white hover:text-yellow-200 transition-colors duration-200 font-semibold py-2"
+                    className="text-white hover:text-yellow-200 transition-colors duration-200 font-medium py-2"
                   >
                     My Reviews
                   </Link>
                   <button
                     onClick={async () => {
                       await logoutUser();
+                      closeMenu();
                       navigate("/");
                     }}
                     className="text-left text-white hover:text-red-200 transition-colors duration-200 font-medium py-2"
@@ -158,7 +253,8 @@ export default function Navbar() {
                 <Link
                   to="/login"
                   onClick={closeMenu}
-                  className="bg-white text-orange-500 px-6 py-2 rounded-full font-semibold hover:bg-yellow-200 hover:text-orange-600 transition-all duration-200 shadow-md text-center"
+                  className="bg-white px-6 py-2 rounded-full font-semibold hover:bg-yellow-200 transition-all duration-200 shadow-md text-center"
+                  style={{ color: "#d35400" }}
                 >
                   Login
                 </Link>

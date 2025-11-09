@@ -21,6 +21,7 @@ const AuthProvider = ({ children }) => {
       if (currentUser) {
         setUser(currentUser);
       } else {
+        setUser(null);
         console.log("no user is active!");
       }
       setLoading(false);

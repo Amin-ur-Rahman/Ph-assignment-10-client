@@ -176,6 +176,20 @@ export default function Register() {
                       value: 6,
                       message: "Password should contain at least 6 characters",
                     },
+                    validate: {
+                      hasUpperCase: (value) =>
+                        /[A-Z]/.test(value) ||
+                        "Password must contain at least one uppercase letter",
+                      hasLowerCase: (value) =>
+                        /[a-z]/.test(value) ||
+                        "Password must contain at least one lowercase letter",
+                      hasNumber: (value) =>
+                        /[0-9]/.test(value) ||
+                        "Password must contain at least one number",
+                      hasSpecialChar: (value) =>
+                        /[!@#$%^&*(),.?":{}|<>]/.test(value) ||
+                        "Password must contain at least one special character (!@#$%^&*)",
+                    },
                   })}
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -190,20 +204,21 @@ export default function Register() {
                   placeholder="Enter your password"
                 />
 
-                {errors.password && (
-                  <p className="text-red-500 text-sm">
-                    {errors.password.message}
-                  </p>
-                )}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                  className="absolute top-1/2 -translate-y-1/2 right-0 pr-4 flex items-center"
                   style={{ color: "#d35400" }}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <button
