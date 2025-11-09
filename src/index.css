@@ -1,5 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: light --default;
+}
+
+.nunito-sans {
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.color-primary {
+  background-color: #d35400;
+}
+.color-secondary {
+  background-color: #f1c40f;
+}
+
+.bg-linear-mix {
+  background: linear-gradient(to right, #d35400, #f1c40f);
+}
+
+.bg-base-main {
+  background-color: #fff8f0;
 }
 
