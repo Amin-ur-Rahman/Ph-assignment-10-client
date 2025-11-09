@@ -10,14 +10,11 @@ import {
 import React, { useEffect, useState } from "react";
 import auth from "../../firebase.init";
 import AuthContext from "./AuthContext";
-import { useNavigate } from "react-router-dom";
 const provider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const cleanUp = onAuthStateChanged(auth, (currentUser) => {
@@ -41,11 +38,9 @@ const AuthProvider = ({ children }) => {
         email,
         password
       );
-      console.log(result);
-
-      return result;
+      return { success: true, user: result.user };
     } catch (error) {
-      console.log("signup error", error.message);
+      return { success: false, errorMessage: error.message };
     } finally {
       setLoading(false);
     }
@@ -54,10 +49,9 @@ const AuthProvider = ({ children }) => {
   const loginUser = async (email, password) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log(result);
-      return result;
+      return { success: true, user: result.user };
     } catch (error) {
-      console.log("firebase login error", error.message);
+      return { success: false, errorMessage: error.message };
     } finally {
       setLoading(false);
     }
@@ -68,9 +62,9 @@ const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const data = result.user;
       setUser(data);
-      return result;
+      return { success: true, user: data };
     } catch (error) {
-      console.log("google pop-up error", error);
+      return { success: false, errorMessage: error.message };
     } finally {
       setLoading(false);
     }
@@ -79,16 +73,15 @@ const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     try {
       await signOut(auth);
-      navigate("/login");
     } catch (error) {
       console.log("logout error", error.message);
     }
   };
 
-  const updateUserInfo = async (userName, url) => {
+  const updateUserInfo = async (name, url) => {
     try {
       await updateProfile(auth.currentUser, {
-        displayName: userName,
+        displayName: name,
         photoURL: url,
       });
       await auth.currentUser.reload();

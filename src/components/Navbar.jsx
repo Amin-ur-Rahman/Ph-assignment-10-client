@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import { MdRestaurant } from "react-icons/md";
 import AuthContext from "../contexts/AuthContext";
@@ -7,14 +7,9 @@ import AuthContext from "../contexts/AuthContext";
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
-  //   const { user, logoutUser } = useContext(AuthContext);
-  const user = null;
-
-  //   const handleLogout = () => {
-  //     logoutUser();
-  //     setIsDropdownOpen(false);
-  //   };
+  const { user, logoutUser, loading } = useContext(AuthContext);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -89,7 +84,10 @@ export default function Navbar() {
                     </Link>
                     <hr className="my-2" />
                     <button
-                      onClick={handleLogout}
+                      onClick={async () => {
+                        await logoutUser();
+                        navigate("/");
+                      }}
                       className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200"
                     >
                       Logout
@@ -142,14 +140,14 @@ export default function Navbar() {
                   <Link
                     to="/my-reviews"
                     onClick={closeMenu}
-                    className="text-white hover:text-yellow-200 transition-colors duration-200 font-medium py-2"
+                    className="text-white hover:text-yellow-200 transition-colors duration-200 font-semibold py-2"
                   >
                     My Reviews
                   </Link>
                   <button
-                    onClick={() => {
-                      handleLogout();
-                      closeMenu();
+                    onClick={async () => {
+                      await logoutUser();
+                      navigate("/");
                     }}
                     className="text-left text-white hover:text-red-200 transition-colors duration-200 font-medium py-2"
                   >
