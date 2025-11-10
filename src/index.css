@@ -11,10 +11,15 @@
 .color-primary {
   background-color: #d35400;
 }
+.text-color-primary {
+  color: #d35400;
+}
 .color-secondary {
   background-color: #f1c40f;
 }
-
+.text-color-secondary {
+  color: #f1c40f;
+}
 .bg-linear-mix {
   background: linear-gradient(to right, #d35400, #f1c40f);
 }

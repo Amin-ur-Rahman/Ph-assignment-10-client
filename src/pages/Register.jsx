@@ -11,10 +11,12 @@ import {
 import { MdRestaurant } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
+  const [passError, setPassError] = useState("");
   const { createUser, updateUserInfo, googleSignUp } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,24 +26,59 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
     reset,
   } = useForm();
 
+  // const pwd = watch("password", "");
   const handleRegister = async (data) => {
-    const { email, password, name, url } = data;
+    const { email, password, name, url, matching_password } = data;
+
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const isMinLength = password.length >= 6;
+
+    setPassError("");
+
+    if (!isMinLength) {
+      setPassError("Password must contain at least 6 characters!");
+      toast.error("❌ Invalid password! Must be 6 characters!", {});
+      return;
+    }
+    if (!hasUpperCase) {
+      setPassError("Password must contain one uppercase letter!");
+      toast.error("❌ Invalid password! Include uppercase letter!", {});
+      return;
+    }
+    if (!hasLowerCase) {
+      setPassError("Password must contain one lowercase letter!");
+      toast.error("❌ Invalid password! Include lowercase letter!", {});
+      return;
+    }
+    if (!hasNumber) {
+      setPassError("Password must contain a number!");
+      toast.error("❌ Invalid password! Include a number!", {});
+      return;
+    }
+
+    if (password !== matching_password) {
+      setPassError("passwords do not match");
+      toast.error("passwords do not match!");
+      return;
+    }
+
+    toast.success("✅ Password is valid!", {});
 
     const res = await createUser(email, password);
     await updateUserInfo(name, url);
 
     if (res.success === true) {
       navigate(`${location.state ? location.state : "/"}`);
-      console.log("user created", res.user);
       reset();
     } else {
-      console.log("signup failed!", res.errorMessage);
-      //   console.log(res.errorMessage.includes("auth/email-already-in-use"));
       setError(res.errorMessage.includes("auth/email-already-in-use"));
+      toast.error(res.errorMessage || "Signup failed!");
     }
   };
 
@@ -53,12 +90,7 @@ export default function Register() {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div
-              className="p-4 rounded-full bg-linear-to-r from-[#d35400] to-[#f1c40f]"
-              //   style={{
-              //     background: "linear-gradient(to right, #d35400, #f1c40f)",
-              //   }}
-            >
+            <div className="p-4 rounded-full bg-linear-to-r from-[#d35400] to-[#f1c40f]">
               <MdRestaurant className="text-5xl text-white" />
             </div>
           </div>
@@ -88,7 +120,7 @@ export default function Register() {
                   type="text"
                   id="name"
                   name="name"
-                  //   required
+                  required
                   {...register("name")}
                   className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-opacity-100 transition-colors"
                   style={{ borderColor: "#d35400", borderOpacity: 0.3 }}
@@ -124,7 +156,7 @@ export default function Register() {
                   onBlur={(e) =>
                     (e.target.style.borderColor = "rgba(211, 84, 0, 0.3)")
                   }
-                  placeholder="Enter your photo URL"
+                  placeholder="Enter your photo URL (optional)"
                 />
               </div>
             </div>
@@ -165,31 +197,14 @@ export default function Register() {
               >
                 Password
               </label>
-              <div className="relative">
+              {/* password 1 */}
+              <div className="relative my-5">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <FaLock className="text-gray-400" />
                 </div>
                 <input
                   {...register("password", {
                     required: "password is required!",
-                    minLength: {
-                      value: 6,
-                      message: "Password should contain at least 6 characters",
-                    },
-                    validate: {
-                      hasUpperCase: (value) =>
-                        /[A-Z]/.test(value) ||
-                        "Password must contain at least one uppercase letter",
-                      hasLowerCase: (value) =>
-                        /[a-z]/.test(value) ||
-                        "Password must contain at least one lowercase letter",
-                      hasNumber: (value) =>
-                        /[0-9]/.test(value) ||
-                        "Password must contain at least one number",
-                      hasSpecialChar: (value) =>
-                        /[!@#$%^&*(),.?":{}|<>]/.test(value) ||
-                        "Password must contain at least one special character (!@#$%^&*)",
-                    },
                   })}
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -214,11 +229,43 @@ export default function Register() {
                 </button>
               </div>
 
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password.message}
-                </p>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaLock className="text-gray-400" />
+                </div>
+                <input
+                  {...register("matching_password", {
+                    required: "password is required!",
+                  })}
+                  type={showPassword ? "text" : "password"}
+                  id="matching_password"
+                  name="matching_password"
+                  required
+                  className="w-full pl-11 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition-colors"
+                  style={{ borderColor: "rgba(211, 84, 0, 0.3)" }}
+                  onFocus={(e) => (e.target.style.borderColor = "#d35400")}
+                  onBlur={(e) =>
+                    (e.target.style.borderColor = "rgba(211, 84, 0, 0.3)")
+                  }
+                  placeholder="Re-enter your password"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute top-1/2 -translate-y-1/2 right-0 pr-4 flex items-center"
+                  style={{ color: "#d35400" }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+
+              {passError && (
+                <p className="text-red-500 text-sm mt-1">{passError}</p>
               )}
+              {/* {errors.matching_password && (
+                <p>{errors.matching_password.message}</p>
+              )} */}
             </div>
 
             <button
