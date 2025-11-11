@@ -4,6 +4,8 @@ import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdRestaurant } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,9 +29,11 @@ export default function Login() {
     if (res.success === true) {
       navigate(`${location.state ? location.state : "/"}`);
       console.log("user logged in", res.user);
+
       reset();
     } else {
       console.log("login failed!", res.errorMessage);
+      toast.error("Login failed! please try again ");
       setError(res.errorMessage.includes("auth/invalid-credential"));
     }
   };

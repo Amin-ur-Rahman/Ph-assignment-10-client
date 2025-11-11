@@ -109,9 +109,9 @@ const AllReviews = () => {
       <div className="max-w-7xl mx-auto">
         {reviews && reviews.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {reviews.map((review) => (
+            {reviews.map((review, index) => (
               <div
-                key={review._id}
+                key={index}
                 className="bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl group"
               >
                 <div className="relative h-56 overflow-hidden">
