@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import AuthContext from "../contexts/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const AddReview = () => {
   const {
@@ -29,24 +30,20 @@ const AddReview = () => {
   const watchFoodImage = watch("foodImage", "");
 
   const addReview = async (formData) => {
-    const res = await fetch("http://localhost:5000/insert-new-review", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    if (!res.ok) {
-      throw new Error("failed to insert review");
+    const res = await axios.post(
+      "http://localhost:5000/insert-new-review",
+      formData
+    );
+    if (!res.data.success) {
+      throw new Error("Post request error");
     }
-    return res.json();
+    return res.data;
   };
 
   const { mutate } = useMutation({
     mutationFn: addReview,
     onSuccess: (res) => {
-      console.log("review added successfully", res);
+      console.log(res.message);
       Swal.fire({
         title: "Review added ",
         icon: "success",

@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa6";
 import AuthContext from "../contexts/AuthContext";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const getReviews = async (email) => {
   const res = await fetch(`http://localhost:5000/reviews?email=${email}`);
@@ -40,22 +41,22 @@ export default function MyReviews() {
   });
 
   const deleteReview = async (id) => {
-    const res = await fetch(`http://localhost:5000/delete-user-review/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) {
-      throw new Error("Error! failed to delete");
+    const res = await axios.delete(
+      `http://localhost:5000/delete-user-review/${id}`
+    );
+    if (!res.data.success) {
+      throw new Error("Deletion failed");
     }
-    return res.json();
+    return res.data;
   };
 
   const { mutate } = useMutation({
     mutationFn: deleteReview,
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries(["reviews", email]);
       setShowDeleteModal(false);
       Swal.fire({
-        title: "Review Deleted Successfully ",
+        title: `${res.message}`,
         icon: "success",
         draggable: true,
       });
@@ -75,6 +76,10 @@ export default function MyReviews() {
     setShowDeleteModal(true);
     setSelectedReview(review);
     // console.log(selectedReview);
+  };
+
+  const navigateToEdit = (reviewId) => {
+    navigate(`edit-review/${reviewId}`);
   };
 
   if (isLoading) {
@@ -97,7 +102,7 @@ export default function MyReviews() {
       }}
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
+        {/* table Header  */}
         <div className="text-center mb-12">
           <div className="flex justify-center items-center gap-3 mb-4">
             <div
@@ -135,7 +140,7 @@ export default function MyReviews() {
           </div>
         </div>
 
-        {/* Reviews Table */}
+        {/* Review table */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-orange-100">
           {reviews.length === 0 ? (
             <div className="text-center py-20">
@@ -200,7 +205,7 @@ export default function MyReviews() {
                         e.currentTarget.style.transform = "scale(1)";
                       }}
                     >
-                      {/* Food Image */}
+                      {/* Food image */}
                       <td className="px-6 py-5">
                         <div className="relative w-24 h-24 rounded-2xl overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-300">
                           <img
@@ -218,7 +223,7 @@ export default function MyReviews() {
                         </div>
                       </td>
 
-                      {/* Food Name */}
+                      {/* Food item */}
                       <td className="px-6 py-5">
                         <div className="font-bold text-gray-800 text-xl mb-2 group-hover:text-[#d35400] transition-colors duration-300">
                           {review.foodName}
@@ -237,7 +242,7 @@ export default function MyReviews() {
                         </div>
                       </td>
 
-                      {/* Restaurant */}
+                      {/* Restaurant name */}
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
                           <MdRestaurant className="text-[#d35400] text-xl" />
@@ -247,7 +252,7 @@ export default function MyReviews() {
                         </div>
                       </td>
 
-                      {/* Posted Date */}
+                      {/* created_at ifo */}
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2 text-gray-600">
                           <FaCalendar className="text-[#d35400]" />
@@ -264,11 +269,10 @@ export default function MyReviews() {
                         </div>
                       </td>
 
-                      {/* Actions */}
                       <td className="px-6 py-5">
                         <div className="flex items-center justify-center gap-3">
                           <button
-                            onClick={() => handleEditClick(review._id)}
+                            onClick={() => navigateToEdit(review._id)}
                             className="group/edit relative p-3 text-white rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-110 hover:rotate-6 transition-all duration-300"
                             style={{
                               background:
