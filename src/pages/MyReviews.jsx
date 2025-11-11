@@ -11,7 +11,7 @@ import {
 import { MdRestaurant } from "react-icons/md";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa6";
 import AuthContext from "../contexts/AuthContext";
 import Swal from "sweetalert2";
@@ -78,9 +78,9 @@ export default function MyReviews() {
     // console.log(selectedReview);
   };
 
-  const navigateToEdit = (reviewId) => {
-    navigate(`edit-review/${reviewId}`);
-  };
+  // const navigateToEdit = (reviewId) => {
+  //   navigate(`edit-review/${reviewId}`);
+  // };
 
   if (isLoading) {
     return (
@@ -271,8 +271,8 @@ export default function MyReviews() {
 
                       <td className="px-6 py-5">
                         <div className="flex items-center justify-center gap-3">
-                          <button
-                            onClick={() => navigateToEdit(review._id)}
+                          <NavLink
+                            to={`/edit-review/${review._id}`}
                             className="group/edit relative p-3 text-white rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-110 hover:rotate-6 transition-all duration-300"
                             style={{
                               background:
@@ -283,10 +283,13 @@ export default function MyReviews() {
                             <span className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-xs font-bold opacity-0 group-hover/edit:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none shadow-lg">
                               Edit Review
                             </span>
-                          </button>
+                          </NavLink>
 
                           <button
-                            onClick={() => handleDeleteClick(review)}
+                            onClick={() => {
+                              handleDeleteClick(review);
+                              // console.log(review._id);
+                            }}
                             className="group/delete relative p-3 text-white rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-110 hover:-rotate-6 transition-all duration-300"
                             style={{
                               background:
