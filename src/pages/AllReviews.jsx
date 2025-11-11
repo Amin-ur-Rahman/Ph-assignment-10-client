@@ -10,6 +10,7 @@ import {
 } from "react-icons/md";
 import { FaUtensils, FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { FaHeart } from "react-icons/fa6";
 
 const AllReviews = () => {
   const {
@@ -145,10 +146,13 @@ const AllReviews = () => {
                     <div className="flex items-center gap-2 text-gray-500 text-sm">
                       <MdLocationOn className="text-gray-500" />
                       <span>{review.location}</span>
+                      <button type="button">
+                        <FaHeart></FaHeart>
+                      </button>
                     </div>
                   </div>
 
-                  {/* Star Rating */}
+                  {/* star rating */}
                   <div className="flex items-center gap-1 mb-3">
                     {renderStars(review.rating)}
                   </div>
