@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   MdRestaurant,
@@ -7,6 +7,7 @@ import {
   MdStarHalf,
   MdStarOutline,
   MdAccessTime,
+  MdSearch,
 } from "react-icons/md";
 import { FaUtensils, FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -16,21 +17,33 @@ import { toast } from "react-toastify";
 import AuthContext from "../contexts/AuthContext";
 
 const AllReviews = () => {
+  const [searchValue, setSearchValue] = useState("");
+  const [finalValue, setFinalValue] = useState("");
   const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setFinalValue(searchValue);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [searchValue]);
+
   const {
     data: reviews,
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: ["allReviews"],
+    queryKey: ["allReviews", finalValue],
     queryFn: async () => {
-      const response = await fetch("http://localhost:5000/reviews");
-      if (!response.ok) {
-        throw new Error("Failed to fetch reviews");
-      }
-      return response.json();
+      const response = await axios.get(
+        `http://localhost:5000/reviews?search=${finalValue}`
+      );
+      return response.data;
     },
+
+    keepPreviousData: true,
   });
 
   const addFavorite = async (favReview) => {
@@ -117,7 +130,7 @@ const AllReviews = () => {
   }
 
   return (
-    <div className="min-h-screen bg-base-main py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen relative bg-base-main py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto mb-12 text-center">
         <div className="flex justify-center mb-4">
           <div className="p-4 rounded-full shadow-lg bg-linear-mix">
@@ -131,6 +144,25 @@ const AllReviews = () => {
           Discover what fellow food lovers are enjoying across the city. From
           street food to fine dining, find your next delicious adventure!
         </p>
+
+        {/* search bar ---------------------- */}
+
+        <div className="mt-8 max-w-2xl mx-auto">
+          <div className="relative">
+            <input
+              onChange={(e) => setSearchValue(e.target.value)}
+              type="text"
+              value={searchValue}
+              // onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by food name, restaurant, or location..."
+              className="w-full px-6 py-4 pr-12 text-gray-700 bg-white border-2 border-gray-200 rounded-full shadow-md focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-all duration-300"
+            />
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+              <MdSearch className="text-2xl text-gray-400" />
+            </div>
+          </div>
+        </div>
+
         <div className="mt-6 inline-block bg-white px-6 py-3 rounded-full shadow-md">
           <p className="text-gray-700 font-semibold">
             <span className="text-color-primary text-xl">
@@ -182,7 +214,7 @@ const AllReviews = () => {
                         <MdLocationOn className="text-gray-500" />
                         <span>{review.location}</span>
                       </div>
-                      {/* favorite buttonnnnnnnnnnnn */}
+                      {/* favorite buttonnnnnnnnnnnn -------------------*/}
 
                       <button
                         type="button"
@@ -193,7 +225,7 @@ const AllReviews = () => {
                     </div>
                   </div>
 
-                  {/* star rating */}
+                  {/* star ratingggggggg-------------- */}
                   <div className="flex items-center gap-1 mb-3">
                     {renderStars(review.rating)}
                   </div>
