@@ -44,11 +44,8 @@ export default function Navbar() {
   ];
 
   return (
-    <nav
-      className="shadow-lg sticky top-0 z-50"
-      style={{ background: "linear-gradient(to right, #d35400, #f1c40f)" }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="shadow-lg sticky top-0 z-50 bg-linear-mix">
+      <div className="max-w-[90dvw] mx-auto lg:px-4">
         <div className="flex justify-between items-center h-16">
           <Link
             to="/"
