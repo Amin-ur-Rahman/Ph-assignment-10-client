@@ -1,5 +1,5 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useContext } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   MdRestaurant,
   MdLocationOn,
@@ -11,8 +11,12 @@ import {
 import { FaUtensils, FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaHeart } from "react-icons/fa6";
+import axios from "axios";
+import { toast } from "react-toastify";
+import AuthContext from "../contexts/AuthContext";
 
 const AllReviews = () => {
+  const { user } = useContext(AuthContext);
   const {
     data: reviews,
     isLoading,
@@ -28,6 +32,36 @@ const AllReviews = () => {
       return response.json();
     },
   });
+
+  const addFavorite = async (favReview) => {
+    const result = await axios.post(
+      "http://localhost:5000/add-to-favorite",
+      favReview
+    );
+
+    if (!result.data.success) {
+      throw new Error(result.data.message);
+    }
+    return result.data;
+  };
+
+  const mutation = useMutation({
+    mutationFn: addFavorite,
+    onSuccess: (res) => {
+      toast.success(res.message);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const handleClickFavorite = async (favReview) => {
+    mutation.mutate({
+      favorite_of: user.email,
+      review_id: favReview._id,
+      added_at: new Date().toISOString(),
+    });
+  };
 
   const renderStars = (rating) => {
     const stars = [];
@@ -146,7 +180,12 @@ const AllReviews = () => {
                     <div className="flex items-center gap-2 text-gray-500 text-sm">
                       <MdLocationOn className="text-gray-500" />
                       <span>{review.location}</span>
-                      <button type="button">
+                      {/* favorite buttonnnnnnnnnnnn */}
+
+                      <button
+                        type="button"
+                        onClick={() => handleClickFavorite(review)}
+                      >
                         <FaHeart></FaHeart>
                       </button>
                     </div>

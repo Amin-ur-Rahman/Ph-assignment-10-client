@@ -13,8 +13,8 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
         <RouterProvider router={router}></RouterProvider>
         <ToastContainer
           position="top-right"
@@ -25,8 +25,8 @@ createRoot(document.getElementById("root")).render(
           draggable
           newestOnTop={false}
         />
-      </AuthProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   </StrictMode>
 );
 
