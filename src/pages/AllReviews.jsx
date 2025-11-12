@@ -177,16 +177,18 @@ const AllReviews = () => {
                         {review.restaurantName}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-500 text-sm">
-                      <MdLocationOn className="text-gray-500" />
-                      <span>{review.location}</span>
+                    <div className="flex items-center justify-between gap-2 text-gray-500 text-sm">
+                      <div className="flex items-center gap-3">
+                        <MdLocationOn className="text-gray-500" />
+                        <span>{review.location}</span>
+                      </div>
                       {/* favorite buttonnnnnnnnnnnn */}
 
                       <button
                         type="button"
                         onClick={() => handleClickFavorite(review)}
                       >
-                        <FaHeart></FaHeart>
+                        <FaHeart size={24} className="text-red-500"></FaHeart>
                       </button>
                     </div>
                   </div>

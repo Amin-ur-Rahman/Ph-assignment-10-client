@@ -94,7 +94,7 @@ export default function Navbar() {
                       : "opacity-0 scale-95 invisible"
                   }`}
                 >
-                  {/* User Profile Section */}
+                  {/* User profile  */}
                   <div
                     className="px-4 py-4 transform transition-all duration-300"
                     style={{
@@ -127,7 +127,7 @@ export default function Navbar() {
                     </div>
                   </div>
 
-                  {/* Menu Items */}
+                  {/* profile menu */}
                   <div className="py-2">
                     <Link
                       to="/add-review"
@@ -145,6 +145,15 @@ export default function Navbar() {
                     >
                       <span className="font-medium group-hover:text-orange-600 transition-colors duration-200">
                         My Reviews
+                      </span>
+                    </Link>
+                    <Link
+                      to="/my-favorites"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 transition-all duration-200 group transform hover:translate-x-1"
+                    >
+                      <span className="font-medium group-hover:text-orange-600 transition-colors duration-200">
+                        My Favorite Reviews
                       </span>
                     </Link>
                   </div>
@@ -237,6 +246,15 @@ export default function Navbar() {
                     className="text-white hover:text-yellow-200 transition-colors duration-200 font-medium py-2"
                   >
                     My Reviews
+                  </Link>
+                  <Link
+                    to="/my-favorites"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center  py-3 text-white hover:bg-orange-50 transition-all duration-200 group transform hover:translate-x-1"
+                  >
+                    <span className="text-white hover:text-yellow-200 transition-colors duration-200 font-medium py-2">
+                      My Favorite Reviews
+                    </span>
                   </Link>
                   <button
                     onClick={async () => {
