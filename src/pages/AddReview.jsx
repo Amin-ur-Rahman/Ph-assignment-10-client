@@ -31,7 +31,7 @@ const AddReview = () => {
 
   const addReview = async (formData) => {
     const res = await axios.post(
-      "http://localhost:5000/insert-new-review",
+      "https://local-food-lovers.onrender.com/insert-new-review",
       formData
     );
     if (!res.data.success) {

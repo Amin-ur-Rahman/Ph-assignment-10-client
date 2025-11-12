@@ -38,7 +38,7 @@ const EditReview = () => {
 
   const fetchData = async () => {
     const response = await axios.get(
-      `http://localhost:5000/user-review/${reviewId}`
+      `https://local-food-lovers.onrender.com/user-review/${reviewId}`
     );
 
     if (!response.data.success) {
@@ -79,7 +79,7 @@ const EditReview = () => {
 
   const updateReview = async (data) => {
     const result = await axios.patch(
-      `http://localhost:5000/edit-user-review/${reviewId}`,
+      `https://local-food-lovers.onrender.com/edit-user-review/${reviewId}`,
       data
     );
     if (!result.data.success) {

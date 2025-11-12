@@ -10,7 +10,7 @@ import {
   MdSearch,
 } from "react-icons/md";
 import { FaUtensils, FaSpinner } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaHeart } from "react-icons/fa6";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -19,7 +19,10 @@ import AuthContext from "../contexts/AuthContext";
 const AllReviews = () => {
   const [searchValue, setSearchValue] = useState("");
   const [finalValue, setFinalValue] = useState("");
+
   const { user } = useContext(AuthContext);
+  const location = useLocation();
+  // console.log(location);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -38,7 +41,7 @@ const AllReviews = () => {
     queryKey: ["allReviews", finalValue],
     queryFn: async () => {
       const response = await axios.get(
-        `http://localhost:5000/reviews?search=${finalValue}`
+        `https://local-food-lovers.onrender.com/reviews?search=${finalValue}`
       );
       return response.data;
     },
@@ -48,7 +51,7 @@ const AllReviews = () => {
 
   const addFavorite = async (favReview) => {
     const result = await axios.post(
-      "http://localhost:5000/add-to-favorite",
+      "https://local-food-lovers.onrender.com/add-to-favorite",
       favReview
     );
 
@@ -238,10 +241,7 @@ const AllReviews = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <img
-                          src={
-                            review.user_photo ||
-                            "https://via.placeholder.com/40"
-                          }
+                          src={review.user_photo}
                           alt={review.user_name}
                           className="w-10 h-10 rounded-full border-2 border-primary object-cover"
                         />
@@ -259,7 +259,8 @@ const AllReviews = () => {
                   </div>
 
                   <Link
-                    to={`/review/${review._id}`}
+                    to={`/review-details/${review._id}`}
+                    state={location.pathname}
                     className="mt-4 w-full bg-linear-mix text-white py-2 px-4 rounded-lg font-semibold text-center block transition-all duration-300 hover:shadow-lg transform hover:translate-y-[-2px]"
                   >
                     View Full Review

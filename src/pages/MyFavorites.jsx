@@ -21,7 +21,7 @@ const MyFavorites = () => {
 
   const fetchFavorites = async () => {
     const res = await axios.get(
-      `http://localhost:5000/get-favorite?email=${email}`
+      `https://local-food-lovers.onrender.com/get-favorite?email=${email}`
     );
 
     return res.data;

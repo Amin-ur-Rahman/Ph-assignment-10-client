@@ -18,7 +18,9 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 const getReviews = async (email) => {
-  const res = await fetch(`http://localhost:5000/reviews?email=${email}`);
+  const res = await fetch(
+    `https://local-food-lovers.onrender.com/reviews?email=${email}`
+  );
 
   if (!res.ok) {
     throw new Error("Failed to fetch reviews");
@@ -42,7 +44,7 @@ export default function MyReviews() {
 
   const deleteReview = async (id) => {
     const res = await axios.delete(
-      `http://localhost:5000/delete-user-review/${id}`
+      `https://local-food-lovers.onrender.com/delete-user-review/${id}`
     );
     if (!res.data.success) {
       throw new Error("Deletion failed");
