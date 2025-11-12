@@ -45,7 +45,7 @@ export default function Navbar() {
 
   return (
     <nav className="shadow-lg sticky top-0 z-50 bg-linear-mix">
-      <div className="max-w-[90dvw] mx-auto lg:px-4">
+      <div className="w-[90dvw] mx-auto ">
         <div className="flex justify-between items-center h-16">
           <Link
             to="/"

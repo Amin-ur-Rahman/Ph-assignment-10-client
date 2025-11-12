@@ -157,8 +157,8 @@ export default function HeroSlider() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center relative overflow-hidden bg-base-main">
-      <AnimatePresence mode="wait">
+    <div className="min-h-[65vh] flex items-center relative overflow-hidden bg-base-main">
+      <AnimatePresence>
         <motion.div
           key={currentSlide}
           className="absolute inset-0 bg-cover bg-center opacity-[0.08]"
@@ -173,7 +173,7 @@ export default function HeroSlider() {
       </AnimatePresence>
 
       {/* --------------slide container------------- */}
-      <div className="container mx-auto px-4 py-8 lg:py-12 relative z-10">
+      <div className="container mx-auto  w-[90dvw] lg:py-12 relative z-10">
         <div className="relative">
           {/* -------------slides---------- */}
           <AnimatePresence mode="wait" custom={direction}>
@@ -260,40 +260,8 @@ export default function HeroSlider() {
                   >
                     <span className="text-2xl">📸</span>
                     <span className="font-semibold text-gray-700">
-                      Photo Verified
+                      Authentic Photos
                     </span>
-                  </motion.div>
-                </motion.div>
-
-                <motion.div
-                  variants={statsVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="flex flex-wrap gap-6 lg:gap-8 pt-4"
-                >
-                  <motion.div variants={statItemVariants}>
-                    <motion.div className="text-2xl lg:text-3xl font-bold text-color-primary">
-                      10K+
-                    </motion.div>
-                    <div className="text-gray-600 text-xs lg:text-sm">
-                      Food Posts
-                    </div>
-                  </motion.div>
-                  <motion.div variants={statItemVariants}>
-                    <motion.div className="text-2xl lg:text-3xl font-bold text-color-secondary">
-                      5K+
-                    </motion.div>
-                    <div className="text-gray-600 text-xs lg:text-sm">
-                      Food Lovers
-                    </div>
-                  </motion.div>
-                  <motion.div variants={statItemVariants}>
-                    <motion.div className="text-2xl lg:text-3xl font-bold text-color-primary">
-                      500+
-                    </motion.div>
-                    <div className="text-gray-600 text-xs lg:text-sm">
-                      Local Spots
-                    </div>
                   </motion.div>
                 </motion.div>
               </motion.div>
@@ -346,7 +314,7 @@ export default function HeroSlider() {
 
           <motion.button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-12 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center z-20 text-color-primary"
+            className="absolute  left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-12 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center z-20 text-color-primary"
             whileHover={{
               scale: 1.1,
               boxShadow: "0 10px 20px rgba(211, 84, 0, 0.2)",
