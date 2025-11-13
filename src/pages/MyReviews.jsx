@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   FaEdit,
   FaTrash,
@@ -29,6 +29,9 @@ const getReviews = async (email) => {
 };
 
 export default function MyReviews() {
+  useEffect(() => {
+    document.title = "MY REVIEWS";
+  }, []);
   const { user } = useContext(AuthContext);
   const email = user.email;
   const navigate = useNavigate();

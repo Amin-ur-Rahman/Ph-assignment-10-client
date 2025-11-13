@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   FaUser,
@@ -14,6 +14,9 @@ import AuthContext from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 
 export default function Register() {
+  useEffect(() => {
+    document.title = "REGISTER NEW ACCOUNT";
+  }, []);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
   const [passError, setPassError] = useState("");

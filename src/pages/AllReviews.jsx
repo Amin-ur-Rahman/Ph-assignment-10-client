@@ -17,6 +17,9 @@ import { toast } from "react-toastify";
 import AuthContext from "../contexts/AuthContext";
 
 const AllReviews = () => {
+  useEffect(() => {
+    document.title = "ALL REVIEWS";
+  }, []);
   const [searchValue, setSearchValue] = useState("");
   const [finalValue, setFinalValue] = useState("");
 

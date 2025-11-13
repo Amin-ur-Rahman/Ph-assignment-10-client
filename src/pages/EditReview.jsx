@@ -16,6 +16,10 @@ import { FaUtensils, FaSpinner } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const EditReview = () => {
+  useEffect(() => {
+    document.title = "EDIT REVIEW";
+  }, []);
+
   const { reviewId } = useParams();
   const paramObj = useParams();
   const navigate = useNavigate();

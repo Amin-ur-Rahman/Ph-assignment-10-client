@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   MdRestaurant,
   MdLocationOn,
@@ -22,6 +22,9 @@ import {
 import Swal from "sweetalert2";
 
 const MyFavorites = () => {
+  useEffect(() => {
+    document.title = "MY FAVORITE REVIEWS";
+  }, []);
   const { user } = useContext(AuthContext);
   const email = user.email;
   const queryClient = useQueryClient();

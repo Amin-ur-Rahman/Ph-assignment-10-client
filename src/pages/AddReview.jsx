@@ -15,6 +15,9 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 const AddReview = () => {
+  useEffect(() => {
+    document.title = "ADD REVIEW";
+  }, []);
   const {
     register,
     handleSubmit,

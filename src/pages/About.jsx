@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaUtensils, FaHeart, FaUsers, FaMapMarkerAlt } from "react-icons/fa";
 import { MdRestaurant, MdRateReview, MdStar } from "react-icons/md";
 
 const About = () => {
+  useEffect(() => {
+    document.title = "ABOUT - local food lovers";
+  }, []);
   return (
     <div className="min-h-screen bg-base-main">
       <section className="relative py-10 px-4 sm:px-6 lg:px-8 overflow-hidden">

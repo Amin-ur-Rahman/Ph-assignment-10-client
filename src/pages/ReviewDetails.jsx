@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   MapPin,
@@ -16,6 +16,9 @@ import { useQuery } from "@tanstack/react-query";
 import { FaSpinner } from "react-icons/fa6";
 
 export default function ReviewDetails() {
+  useEffect(() => {
+    document.title = "REVIEW DETAILS";
+  }, []);
   const navigate = useNavigate();
   const { reviewId } = useParams();
   const [liked, setLiked] = useState(false);
