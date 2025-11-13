@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import { MdRestaurant } from "react-icons/md";
 import AuthContext from "../contexts/AuthContext";
+import logo from "../assets/logo-2.png";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,7 +13,6 @@ export default function Navbar() {
 
   const { user, logoutUser, loading } = useContext(AuthContext);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -44,16 +44,12 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="shadow-lg sticky top-0 z-50 bg-linear-mix">
+    <nav className="shadow-lg sticky top-0 z-50 bg-linear-mix lg:py-2">
       <div className="w-[90dvw] mx-auto ">
         <div className="flex justify-between items-center h-16">
-          <Link
-            to="/"
-            className="flex items-center space-x-2 text-white font-bold text-xl"
-          >
-            <MdRestaurant className="text-3xl" />
-            <span className="hidden sm:block">Local Food Lovers</span>
-            <span className="sm:hidden">Food Lovers</span>
+          <Link to="/">
+            {/* -------------------------------------------logo--------------- */}
+            <img src={logo} className="lg:h-15 h-10 md:h-12 w-auto " alt="" />
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -91,7 +87,7 @@ export default function Navbar() {
                       : "opacity-0 scale-95 invisible"
                   }`}
                 >
-                  {/* User profile  */}
+                  {/* User profile  ---------------------*/}
                   <div
                     className="px-4 py-4 transform transition-all duration-300"
                     style={{
@@ -124,7 +120,7 @@ export default function Navbar() {
                     </div>
                   </div>
 
-                  {/* profile menu */}
+                  {/* profile menu----------------- */}
                   <div className="py-2">
                     <Link
                       to="/add-review"
@@ -155,7 +151,6 @@ export default function Navbar() {
                     </Link>
                   </div>
 
-                  {/* Logout Button */}
                   <div className="border-t border-gray-200">
                     <button
                       onClick={async () => {
@@ -207,7 +202,7 @@ export default function Navbar() {
                 <>
                   <hr className="border-white/30" />
 
-                  {/* Mobile User Profile */}
+                  {/* Mobile User Profile----------------- */}
                   <div className="flex items-center space-x-3 py-2">
                     {user.photoURL ? (
                       <img

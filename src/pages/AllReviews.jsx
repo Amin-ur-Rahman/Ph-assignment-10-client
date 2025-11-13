@@ -178,7 +178,7 @@ const AllReviews = () => {
 
       <div className="max-w-7xl mx-auto">
         {reviews && reviews.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {reviews.map((review, index) => (
               <div
                 key={index}
@@ -233,7 +233,7 @@ const AllReviews = () => {
                     {renderStars(review.rating)}
                   </div>
 
-                  <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-700 text-sm mb-4 line-clamp-1">
                     "{review.shortReview}"
                   </p>
 

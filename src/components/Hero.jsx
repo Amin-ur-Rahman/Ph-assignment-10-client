@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaStar } from "react-icons/fa6";
+import { FaCamera, FaHotel, FaStarAndCrescent } from "react-icons/fa";
 
 export default function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -131,33 +133,8 @@ export default function HeroSlider() {
     },
   };
 
-  const statsVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const statItemVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 12,
-      },
-    },
-  };
-
   return (
-    <div className="min-h-[65vh] flex items-center relative overflow-hidden bg-base-main">
+    <div className="min-h-[65vh] flex items-center relative overflow-hidden pt-4 bg-base-main">
       <AnimatePresence>
         <motion.div
           key={currentSlide}
@@ -236,7 +213,9 @@ export default function HeroSlider() {
                     whileHover={{ scale: 1.05, y: -2 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <span className="text-2xl">⭐</span>
+                    <FaStar size={24} className="text-color-secondary">
+                      {" "}
+                    </FaStar>
                     <span className="font-semibold text-gray-700">
                       Top Rated Reviews
                     </span>
@@ -247,7 +226,7 @@ export default function HeroSlider() {
                     whileHover={{ scale: 1.05, y: -2 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <span className="text-2xl">🍽️</span>
+                    <FaHotel className="text-color-primary" size={24}></FaHotel>
                     <span className="font-semibold text-gray-700">
                       Local Favorites
                     </span>
@@ -258,7 +237,7 @@ export default function HeroSlider() {
                     whileHover={{ scale: 1.05, y: -2 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <span className="text-2xl">📸</span>
+                    <FaCamera size={24} className="text-gray-500"></FaCamera>
                     <span className="font-semibold text-gray-700">
                       Authentic Photos
                     </span>

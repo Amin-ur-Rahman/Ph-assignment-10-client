@@ -13,11 +13,18 @@ import { FaHeart, FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
 const MyFavorites = () => {
   const { user } = useContext(AuthContext);
   const email = user.email;
+  const queryClient = useQueryClient();
 
   const fetchFavorites = async () => {
     const res = await axios.get(
@@ -27,7 +34,11 @@ const MyFavorites = () => {
     return res.data;
   };
 
-  const { isLoading, data: favorites } = useQuery({
+  const {
+    isLoading,
+    data: favorites,
+    refetch,
+  } = useQuery({
     queryKey: ["favorite-reviews"],
     queryFn: fetchFavorites,
     onError: (error) => {
@@ -35,7 +46,31 @@ const MyFavorites = () => {
     },
   });
 
-  console.log(favorites);
+  // console.log(favorites);
+
+  const mutation = useMutation({
+    mutationFn: async (favoriteId) => {
+      const res = await axios.delete(
+        `https://local-food-lovers.onrender.com/delete-favorite/${favoriteId}`
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      Swal.fire({
+        title: "Review deleted from favorite list",
+        text: "this action cannot be undone!",
+        icon: "success",
+      });
+      refetch();
+    },
+    onError: () => {
+      Swal.fire({
+        title: "Request failed!",
+        text: "try again later",
+        icon: "error",
+      });
+    },
+  });
 
   const renderStars = (rating) => {
     const stars = [];
@@ -56,7 +91,7 @@ const MyFavorites = () => {
   };
 
   const handleRemoveFavorite = (reviewId) => {
-    console.log("Remove favorite:", reviewId);
+    mutation.mutate(reviewId);
   };
 
   if (isLoading) {
@@ -179,11 +214,10 @@ const MyFavorites = () => {
                         </p>
                       </td>
 
-                      {/* Actions */}
                       <td className="px-3 sm:px-6 py-3 sm:py-4">
                         <div className="flex items-center justify-center gap-1 sm:gap-2">
                           <Link
-                            to={`/review/${favorite.reviewId || favorite._id}`}
+                            to={`/review-details/${favorite._id}`}
                             className="p-1.5 sm:p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors duration-200"
                             title="View Full Review"
                           >

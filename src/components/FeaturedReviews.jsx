@@ -17,7 +17,7 @@ export default function FeaturedReviews() {
     queryKey: ["allReviews"],
     queryFn: async () => {
       const response = await axios.get(
-        "https://local-food-lovers.onrender.com/reviews"
+        "https://local-food-lovers.onrender.com/get-top-rated-reviews"
       );
       return response.data;
     },
@@ -86,7 +86,6 @@ export default function FeaturedReviews() {
   return (
     <section className="py-12 lg:py-16" style={{ backgroundColor: "#fff8f0" }}>
       <div className="container mx-auto px-4">
-        {/* Section Header */}
         <div className="text-center mb-10">
           <h2
             className="text-3xl lg:text-4xl font-bold mb-3"
@@ -99,14 +98,12 @@ export default function FeaturedReviews() {
           </p>
         </div>
 
-        {/* Reviews Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {featuredReviews.map((review) => (
             <div
               key={review._id}
               className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
             >
-              {/* Food Image */}
               <div className="relative h-56 overflow-hidden">
                 <img
                   src={review.foodImage}
@@ -123,9 +120,7 @@ export default function FeaturedReviews() {
                 </div>
               </div>
 
-              {/* Card Content */}
               <div className="p-5">
-                {/* Food Name */}
                 <h3
                   className="text-xl font-bold mb-2"
                   style={{ color: "#d35400" }}
@@ -133,7 +128,6 @@ export default function FeaturedReviews() {
                   {review.foodName}
                 </h3>
 
-                {/* Restaurant Info */}
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-gray-700">
                     <Store className="w-5 h-5" style={{ color: "#f1c40f" }} />
@@ -146,7 +140,6 @@ export default function FeaturedReviews() {
                   </div>
                 </div>
 
-                {/* Reviewer Info */}
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
                   <div className="flex items-center gap-2">
                     <img
@@ -160,7 +153,6 @@ export default function FeaturedReviews() {
                   </div>
                 </div>
 
-                {/* Star Rating */}
                 <div
                   className="flex items-center gap-1 mb-4"
                   style={{ color: "#f1c40f" }}
@@ -168,7 +160,6 @@ export default function FeaturedReviews() {
                   {renderStars(review.rating)}
                 </div>
 
-                {/* View Details Button */}
                 <button
                   onClick={() => handleViewDetails(review._id)}
                   className="w-full py-2.5 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
@@ -184,7 +175,6 @@ export default function FeaturedReviews() {
           ))}
         </div>
 
-        {/* Show All Button */}
         <div className="text-center">
           <button
             onClick={handleShowAll}
