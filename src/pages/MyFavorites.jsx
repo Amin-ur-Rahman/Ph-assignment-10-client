@@ -37,11 +37,7 @@ const MyFavorites = () => {
     return res.data;
   };
 
-  const {
-    isLoading,
-    data: favorites,
-    refetch,
-  } = useQuery({
+  const { isLoading, data: favorites } = useQuery({
     queryKey: ["favorite-reviews"],
     queryFn: fetchFavorites,
     onError: (error) => {
@@ -50,6 +46,7 @@ const MyFavorites = () => {
   });
 
   // console.log(favorites);
+  // checking git hub issue
 
   const mutation = useMutation({
     mutationFn: async (favoriteId) => {
@@ -64,7 +61,6 @@ const MyFavorites = () => {
         text: "this action cannot be undone!",
         icon: "success",
       });
-      refetch();
     },
     onError: () => {
       Swal.fire({

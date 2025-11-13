@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdRestaurant } from "react-icons/md";
@@ -8,6 +8,9 @@ import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 
 export default function Login() {
+  useEffect(() => {
+    document.title = "LOGIN";
+  }, []);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
   const { loginUser, googleSignUp } = useContext(AuthContext);
