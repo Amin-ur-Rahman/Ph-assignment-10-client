@@ -1,16 +1,27 @@
-# React + Vite
+**Local Food Lovers**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application where users can share and explore reviews of local food items and restaurants.
 
-Currently, two official plugins are available:
+Live Site: https://local-food-lovers.onrender.com
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Features**
 
-## React Compiler
+# Users can add reviews with food images, ratings, and short descriptions.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Displays top-rated food items from all users.
 
-## Expanding the ESLint configuration
+# Users can save and manage their favorite reviews.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Search functionality to find foods by name, restaurant, or location.
+
+# Responsive design for mobile, tablet, and desktop devices.
+
+**Technologies Used**
+
+# Frontend: React, Vite, Axios, Tailwind CSS
+
+# Backend: Node.js, Express.js, MongoDB
+
+# Authentication: Firebase Auth
+
+# Hosting: Render for backend and Netlify for frontend

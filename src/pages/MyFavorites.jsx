@@ -61,6 +61,7 @@ const MyFavorites = () => {
         text: "this action cannot be undone!",
         icon: "success",
       });
+      queryClient.invalidateQueries(["favorite-reviews"]);
     },
     onError: () => {
       Swal.fire({
