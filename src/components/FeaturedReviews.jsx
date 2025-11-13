@@ -85,7 +85,7 @@ export default function FeaturedReviews() {
 
   return (
     <section className="py-12 lg:py-16" style={{ backgroundColor: "#fff8f0" }}>
-      <div className="container mx-auto px-4">
+      <div className="container w-[90dvw] mx-auto ">
         <div className="text-center mb-10">
           <h2
             className="text-3xl lg:text-4xl font-bold mb-3"

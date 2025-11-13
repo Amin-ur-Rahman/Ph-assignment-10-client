@@ -31,7 +31,7 @@ const CTABanner = () => {
               </div>
             </div>
 
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-color-primary">
               Join Our Food Community
             </h2>
 
@@ -42,8 +42,8 @@ const CTABanner = () => {
 
             <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto mb-10">
               <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
-                <MdRateReview className="text-3xl md:text-4xl text-primary mx-auto mb-2" />
-                <p className="text-2xl md:text-3xl font-bold text-primary">
+                <MdRateReview className="text-3xl md:text-4xl text-color-primary mx-auto mb-2" />
+                <p className="text-2xl md:text-3xl font-bold text-color-primary">
                   500+
                 </p>
                 <p className="text-xs md:text-sm text-gray-600">Reviews</p>
@@ -51,7 +51,7 @@ const CTABanner = () => {
 
               <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
                 <MdRestaurant className="text-3xl md:text-4xl text-secondary mx-auto mb-2" />
-                <p className="text-2xl md:text-3xl font-bold text-primary">
+                <p className="text-2xl md:text-3xl font-bold text-color-primary">
                   200+
                 </p>
                 <p className="text-xs md:text-sm text-gray-600">Restaurants</p>
@@ -59,7 +59,7 @@ const CTABanner = () => {
 
               <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
                 <FaHeart className="text-3xl md:text-4xl text-red-500 mx-auto mb-2" />
-                <p className="text-2xl md:text-3xl font-bold text-primary">
+                <p className="text-2xl md:text-3xl font-bold text-color-primary">
                   100+
                 </p>
                 <p className="text-xs md:text-sm text-gray-600">Food Lovers</p>
@@ -77,7 +77,7 @@ const CTABanner = () => {
 
               <Link
                 to="/reviews"
-                className="bg-white text-primary border-2 border-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-primary hover:text-white shadow-md hover:shadow-lg transition-all duration-300"
+                className="bg-white text-color-primary border-2 border-amber-500 px-8 py-4 rounded-full font-bold text-lg   hover:text-white shadow-md hover:shadow-lg transition-all duration-300"
               >
                 Explore Reviews
               </Link>

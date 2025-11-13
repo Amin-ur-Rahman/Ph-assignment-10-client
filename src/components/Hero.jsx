@@ -134,7 +134,7 @@ export default function HeroSlider() {
   };
 
   return (
-    <div className="min-h-[65vh] flex items-center relative overflow-hidden pt-4 bg-base-main">
+    <div className="min-h-[65vh] flex items-center relative overflow-hidden pt-4   bg-base-main">
       <AnimatePresence>
         <motion.div
           key={currentSlide}

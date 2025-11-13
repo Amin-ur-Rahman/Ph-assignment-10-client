@@ -11,6 +11,7 @@ import EditReview from "../pages/EditReview";
 import MyFavorites from "../pages/MyFavorites";
 import ReviewDetails from "../pages/ReviewDetails";
 import ErrorPage from "../components/ErrorPage";
+import About from "../pages/About";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
       {
         path: "/review-details/:reviewId",
         element: <ReviewDetails></ReviewDetails>,
+      },
+      {
+        path: "/about",
+        element: <About></About>,
       },
     ],
   },
