@@ -52,7 +52,7 @@ Before you begin, ensure you have the following installed:
 #### Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/local-food-lovers.git
+git clone  https://github.com/Amin-ur-Rahman/Ph-assignment-10-client.git
 cd local-food-lovers
 ```
 
