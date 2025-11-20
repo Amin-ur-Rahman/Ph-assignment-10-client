@@ -215,7 +215,7 @@ Built with passion and love for food by **[AMinur Rahman]** using the MERN stack
 
 Have questions or suggestions? Feel free to reach out!
 
-- **Email**: your.email@example.com
+- **Email**: amin.ar679799@gmail.com
 - **GitHub**: [Amin-ur-Rahman](https://github.com/Amin-ur-Rahman)
 - **LinkedIn**: [Aminur Rahman](https://www.linkedin.com/in/aminur-rahman-116506360/)
 
