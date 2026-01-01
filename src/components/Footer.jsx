@@ -137,10 +137,13 @@ export default function Footer() {
                 </button>
               </li>
               <li>
-                <button className="text-gray-600 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2">
+                <Link
+                  to="/about"
+                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2"
+                >
                   <span className="w-1.5 h-1.5 rounded-full color-secondary" />
                   About Us
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
