@@ -20,19 +20,19 @@
 
 ## 🛠️ Tech Stack
 
-| Technology       | Purpose                          |
-| ---------------- | -------------------------------- |
-| React            | Frontend UI framework            |
-| Node.js          | Backend runtime environment      |
-| Express.js       | RESTful API server               |
-| MongoDB          | NoSQL database                   |
-| Mongoose         | MongoDB object modeling          |
-| Firebase         | Authentication service           |
-| Tailwind CSS     | Utility-first styling            |
-| DaisyUI          | Tailwind component library       |
-| React Router DOM | Client-side routing              |
-| Lucide React     | Modern icon library              |
-| React Icons      | Additional icon components       |
+| Technology       | Purpose                     |
+| ---------------- | --------------------------- |
+| React            | Frontend UI framework       |
+| Node.js          | Backend runtime environment |
+| Express.js       | RESTful API server          |
+| MongoDB          | NoSQL database              |
+| Mongoose         | MongoDB object modeling     |
+| Firebase         | Authentication service      |
+| Tailwind CSS     | Utility-first styling       |
+| DaisyUI          | Tailwind component library  |
+| React Router DOM | Client-side routing         |
+| Lucide React     | Modern icon library         |
+| React Icons      | Additional icon components  |
 
 ---
 
@@ -42,9 +42,9 @@
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** 
-- **npm**  or **yarn**
-- **MongoDB** 
+- **Node.js**
+- **npm** or **yarn**
+- **MongoDB**
 - **Firebase Project** (for authentication)
 
 ### Installation
@@ -175,13 +175,12 @@ The application uses a warm, appetizing color palette:
 
 ---
 
-
-
 ## 📱 Live Demo
 
 **Netlify Live Link:**
+
 ```
-https://local-food-lovers-amin-ur-rahman.netlify.app/
+https://ph-assignment-10-client-rho.vercel.app
 ```
 
 ---
@@ -198,13 +197,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-
-
 ## 🙏 Credits
 
 Built with passion and love for food by **[AMinur Rahman]** using the MERN stack, Firebase, Tailwind CSS, and a dedication to creating beautiful, functional web applications.
 
 **Special Thanks:**
+
 - Unsplash and imgbb for food photography
 - Lucide React for minimal icons
 - The food lover community for inspiration
