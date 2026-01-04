@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaStar } from "react-icons/fa6";
 import { FaCamera, FaHotel, FaStarAndCrescent } from "react-icons/fa";
+import { IoIosStarOutline } from "react-icons/io";
+import { MdFavoriteBorder } from "react-icons/md";
+import { Link } from "react-router-dom";
+import AuthContext from "../contexts/AuthContext";
 
 export default function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
+
+  const { user } = useContext(AuthContext);
 
   const slides = [
     {
@@ -19,8 +25,6 @@ export default function HeroSlider() {
         "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=700&fit=crop",
       bgImage:
         "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1920&h=1080&fit=crop",
-      buttonText: "Join Now",
-      buttonAction: "/register",
     },
     {
       id: 2,
@@ -33,8 +37,6 @@ export default function HeroSlider() {
         "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&h=700&fit=crop",
       bgImage:
         "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&h=1080&fit=crop",
-      buttonText: "Start Exploring",
-      buttonAction: "/explore",
     },
     {
       id: 3,
@@ -47,8 +49,6 @@ export default function HeroSlider() {
         "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=700&fit=crop",
       bgImage:
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&h=1080&fit=crop",
-      buttonText: "Share Now",
-      buttonAction: "/create",
     },
   ];
 
@@ -57,7 +57,6 @@ export default function HeroSlider() {
       setDirection(1);
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [slides.length]);
 
@@ -76,27 +75,14 @@ export default function HeroSlider() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  //   const handleButtonClick = (action) => {
-  //
-  //   };
-
   const slideVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction) => ({
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-    }),
+    enter: (direction) => ({ x: direction > 0 ? 1000 : -1000, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction) => ({ x: direction < 0 ? 1000 : -1000, opacity: 0 }),
   };
 
   const contentVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
@@ -109,50 +95,26 @@ export default function HeroSlider() {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.6, 0.05, 0.01, 0.9],
-      },
-    },
-  };
-
-  const imageVariants = {
-    hidden: { opacity: 0, scale: 0.8, rotate: -5 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.6, 0.05, 0.01, 0.9],
-      },
-    },
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
   return (
-    <div className="min-h-[65vh] flex items-center relative overflow-hidden pt-4   bg-base-main">
+    <div className="min-h-[65vh] flex items-center relative overflow-hidden bg-background">
       <AnimatePresence>
         <motion.div
           key={currentSlide}
-          className="absolute inset-0 bg-cover bg-center opacity-[0.08]"
-          style={{
-            backgroundImage: `url(${slides[currentSlide].bgImage})`,
-          }}
+          className="absolute inset-0 bg-cover bg-center opacity-[0.05]"
+          style={{ backgroundImage: `url(${slides[currentSlide].bgImage})` }}
           initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.08 }}
+          animate={{ scale: 1, opacity: 0.05 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
+          transition={{ duration: 1.2 }}
         />
       </AnimatePresence>
 
-      {/* --------------slide container------------- */}
-      <div className="container mx-auto  w-[90dvw] lg:py-12 relative z-10">
+      <div className="container mx-auto w-[90dvw] lg:py-12 relative z-10">
         <div className="relative">
-          {/* -------------slides---------- */}
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentSlide}
@@ -171,198 +133,157 @@ export default function HeroSlider() {
                 variants={contentVariants}
                 initial="hidden"
                 animate="visible"
-                className="space-y-4 lg:space-y-6"
+                className="space-y-6"
               >
                 <motion.h1
                   variants={itemVariants}
-                  className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
+                  className="text-2xl lg:text-3xl font-bold leading-tight"
                 >
-                  <motion.span
-                    className="block text-color-primary"
-                    variants={itemVariants}
-                  >
+                  <span className="block text-primary">
                     {slides[currentSlide].title}
-                  </motion.span>
-                  <motion.span
-                    className="block text-color-secondary"
-                    variants={itemVariants}
-                  >
+                  </span>
+                  <span className="block text-secondary">
                     {slides[currentSlide].subtitle}
-                  </motion.span>
-                  <motion.span
-                    className="block text-gray-800"
-                    variants={itemVariants}
-                  >
+                  </span>
+                  <span className="block text-text">
                     {slides[currentSlide].highlight}
-                  </motion.span>
+                  </span>
                 </motion.h1>
 
                 <motion.p
                   variants={itemVariants}
-                  className="text-base lg:text-lg text-gray-700 max-w-xl leading-relaxed"
+                  className="text-base text-neutral max-w-xl leading-relaxed"
                 >
                   {slides[currentSlide].description}
                 </motion.p>
 
                 <motion.div
                   variants={itemVariants}
-                  className="flex flex-wrap gap-3 pt-2"
+                  className="flex flex-wrap gap-3"
                 >
                   <motion.div
-                    className="px-4 py-2 rounded-full bg-white shadow-md flex items-center gap-2"
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    className="px-4 py-2 rounded-md bg-background border border-neutral/20 shadow-sm flex items-center gap-2"
+                    whileHover={{ y: -2 }}
                   >
-                    <FaStar size={24} className="text-color-secondary">
-                      {" "}
-                    </FaStar>
-                    <span className="font-semibold text-gray-700">
-                      Top Rated Reviews
+                    <IoIosStarOutline size={20} className="text-secondary" />
+                    <span className="font-semibold text-neutral text-sm">
+                      Top Rated
                     </span>
                   </motion.div>
 
                   <motion.div
-                    className="px-4 py-2 rounded-full bg-white shadow-md flex items-center gap-2"
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    className="px-4 py-2 rounded-md bg-background border border-neutral/20 shadow-sm flex items-center gap-2"
+                    whileHover={{ y: -2 }}
                   >
-                    <FaHotel className="text-color-primary" size={24}></FaHotel>
-                    <span className="font-semibold text-gray-700">
-                      Local Favorites
+                    <MdFavoriteBorder className="text-primary" size={20} />
+                    <span className="font-semibold text-neutral text-sm">
+                      Favorites
                     </span>
                   </motion.div>
+                </motion.div>
 
-                  <motion.div
-                    className="px-4 py-2 rounded-full bg-white shadow-md flex items-center gap-2"
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                <motion.div
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Link
+                    to={`${user ? "/dashboard/add-review" : "/register"}`}
+                    className="inline-block px-8 py-3 rounded-md bg-gradient-to-r from-primary to-secondary text-background font-bold shadow-lg transition-all"
                   >
-                    <FaCamera size={24} className="text-gray-500"></FaCamera>
-                    <span className="font-semibold text-gray-700">
-                      Authentic Photos
-                    </span>
-                  </motion.div>
+                    {user ? "Share Your experience" : "Connect With Us"}
+                  </Link>
                 </motion.div>
               </motion.div>
 
               <motion.div
-                variants={imageVariants}
-                initial="hidden"
-                animate="visible"
-                className="relative"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="relative hidden lg:block"
               >
-                <motion.div
-                  className="relative rounded-2xl overflow-hidden shadow-2xl"
-                  whileHover={{ scale: 1.02, rotate: 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
+                <div className="relative rounded-md overflow-hidden shadow-2xl border-4 border-background">
                   <img
                     src={slides[currentSlide].image}
                     alt={slides[currentSlide].title}
-                    className="w-full h-[350px] lg:h-[450px] object-cover"
+                    className="w-full h-[450px] object-cover"
                   />
-
+                  {/* Decorative Elements */}
                   <motion.div
-                    className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-20 bg-linear-mix"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      rotate: [0, 180, 360],
-                    }}
-                    transition={{
-                      duration: 8,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
+                    className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-20 bg-primary blur-xl"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 4, repeat: Infinity }}
                   />
-                  <motion.div
-                    className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full opacity-20 bg-linear-mix"
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: [360, 180, 0],
-                    }}
-                    transition={{
-                      duration: 10,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                  />
-                </motion.div>
+                </div>
               </motion.div>
             </motion.div>
           </AnimatePresence>
 
-          <motion.button
-            onClick={prevSlide}
-            className="absolute  left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-12 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center z-20 text-color-primary"
-            whileHover={{
-              scale: 1.1,
-              boxShadow: "0 10px 20px rgba(211, 84, 0, 0.2)",
-            }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Navigation Arrows - Using rounded-md for standardized look */}
+          <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between pointer-events-none px-2 lg:-px-4">
+            <motion.button
+              onClick={prevSlide}
+              className="pointer-events-auto w-10 h-10 rounded-md bg-background shadow-xl flex items-center justify-center text-primary border border-neutral/10"
+              whileHover={{ scale: 1.1, bg: "#fff" }}
+              whileTap={{ scale: 0.9 }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </motion.button>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </motion.button>
 
-          <motion.button
-            onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-12 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center z-20 text-color-primary"
-            whileHover={{
-              scale: 1.1,
-              boxShadow: "0 10px 20px rgba(211, 84, 0, 0.2)",
-            }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <motion.button
+              onClick={nextSlide}
+              className="pointer-events-auto w-10 h-10 rounded-md bg-background shadow-xl flex items-center justify-center text-primary border border-neutral/10"
+              whileHover={{ scale: 1.1, bg: "#fff" }}
+              whileTap={{ scale: 0.9 }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </motion.button>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </motion.button>
+          </div>
         </div>
 
-        <div className="flex justify-center gap-3 mt-8">
-          {slides.map((uselessParameter, index) => (
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-3 mt-12">
+          {slides.map((_, index) => (
             <motion.button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`rounded-full ${
-                index === currentSlide ? "bg-linear-mix" : "color-primary"
-              }`}
-              style={{
-                width: index === currentSlide ? "32px" : "12px",
-                height: "12px",
-                opacity: index === currentSlide ? 1 : 0.5,
-              }}
-              whileHover={{ opacity: 1, scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
+              className="h-2 rounded-md transition-all"
+              initial={false}
               animate={{
-                width: index === currentSlide ? "32px" : "12px",
-                opacity: index === currentSlide ? 1 : 0.5,
+                width: index === currentSlide ? 32 : 12,
+                backgroundColor:
+                  index === currentSlide
+                    ? "var(--color-secondary, #f1c40f)"
+                    : "var(--color-primary, #d35400)",
+                opacity: index === currentSlide ? 1 : 0.4,
               }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              aria-label={`Go to slide ${index + 1}`}
+              style={{
+                backgroundColor: index === currentSlide ? "#f1c40f" : "#d35400",
+              }}
             />
           ))}
         </div>

@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import { toast } from "react-toastify";
+
 import Hero from "../components/Hero";
 import FeaturedReviews from "../components/FeaturedReviews";
 import CTABanner from "../components/CTABanner";
 import TopUser from "../components/TopUser";
+import HowItWorks from "../components/HowItWorks";
+import OurJourney from "../components/OurJourney";
 
 const Home = () => {
   useEffect(() => {
@@ -15,6 +17,8 @@ const Home = () => {
       <FeaturedReviews></FeaturedReviews>
       <TopUser></TopUser>
       <CTABanner></CTABanner>
+      <HowItWorks></HowItWorks>
+      <OurJourney></OurJourney>
     </div>
   );
 };

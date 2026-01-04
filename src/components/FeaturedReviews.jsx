@@ -1,9 +1,10 @@
 import React from "react";
 import { MapPin, Store, Star, StarHalf } from "lucide-react";
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { FaSpinner } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../contexts/axiosInstance";
+import { motion } from "framer-motion";
 
 export default function FeaturedReviews() {
   const navigate = useNavigate();
@@ -16,12 +17,9 @@ export default function FeaturedReviews() {
   } = useQuery({
     queryKey: ["allReviews"],
     queryFn: async () => {
-      const response = await axios.get(
-        "https://local-food-lovers.onrender.com/get-top-rated-reviews"
-      );
+      const response = await axiosInstance.get(`/get-top-rated-reviews`);
       return response.data;
     },
-
     keepPreviousData: true,
   });
 
@@ -40,19 +38,29 @@ export default function FeaturedReviews() {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={`full-${i}`} className="w-5 h-5" fill="currentColor" />
+        <Star
+          key={`full-${i}`}
+          className="w-5 h-5 text-secondary"
+          fill="currentColor"
+        />
       );
     }
 
     if (hasHalfStar) {
       stars.push(
-        <StarHalf key="half" className="w-5 h-5" fill="currentColor" />
+        <StarHalf
+          key="half"
+          className="w-5 h-5 text-secondary"
+          fill="currentColor"
+        />
       );
     }
 
     const emptyStars = 5 - Math.ceil(rating);
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="w-5 h-5 text-gray-300" />);
+      stars.push(
+        <Star key={`empty-${i}`} className="w-5 h-5 text-neutral/40" />
+      );
     }
 
     return stars;
@@ -60,10 +68,10 @@ export default function FeaturedReviews() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-base-main flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <FaSpinner className="text-6xl text-color-primary animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">Loading delicious reviews...</p>
+          <FaSpinner className="text-6xl text-primary animate-spin mx-auto mb-4" />
+          <p className="text-neutral text-lg">Loading delicious reviews...</p>
         </div>
       </div>
     );
@@ -71,38 +79,59 @@ export default function FeaturedReviews() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-base-main flex items-center justify-center">
-        <div className="text-center bg-white p-8 rounded-2xl shadow-lg max-w-md">
-          <p className="text-red-500 text-xl font-semibold mb-2">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center bg-background p-8 rounded-md shadow-lg max-w-md border border-neutral/20">
+          <p className="text-accent text-xl font-semibold mb-2">
             Oops! Something went wrong
           </p>
-          <p className="text-gray-600">{error.message}</p>
+          <p className="text-neutral">{error.message}</p>
         </div>
       </div>
     );
   }
-  const featuredReviews = allReviews.slice(0, 6);
+  const featuredReviews = allReviews.slice(0, 4);
 
   return (
-    <section className="py-12 lg:py-16" style={{ backgroundColor: "#fff8f0" }}>
+    <section className="py-12 lg:py-16 bg-background">
       <div className="container w-[90dvw] mx-auto ">
         <div className="text-center mb-10">
-          <h2
-            className="text-3xl lg:text-4xl font-bold mb-3"
-            style={{ color: "#d35400" }}
-          >
+          <h2 className="text-xl lg:text-2xl font-bold mb-3 text-primary">
             Featured Reviews
           </h2>
-          <p className="text-gray-700 text-lg max-w-2xl mx-auto">
+          <p className="text-text text-base md:text-lg max-w-2xl mx-auto">
             Discover what food lovers are raving about in their neighborhoods
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {featuredReviews.map((review) => (
-            <div
+        <motion.div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+          {featuredReviews.map((review, index) => (
+            <motion.div
+              initial={{
+                y: 60,
+                opacity: 0,
+                scale: 0.9,
+              }}
+              whileInView={{
+                y: 0,
+                opacity: 1,
+                scale: 1,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.25,
+              }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.15,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              whileHover={{
+                y: -8,
+                scale: 1.02,
+                transition: { duration: 0.2 },
+              }}
               key={review._id}
-              className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+              className="bg-background rounded-md overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-neutral/10"
             >
               <div className="relative h-56 overflow-hidden">
                 <img
@@ -110,76 +139,61 @@ export default function FeaturedReviews() {
                   alt={review.foodName}
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                 />
-                <div
-                  className="absolute top-3 right-3 px-3 py-1 rounded-full text-white text-sm font-semibold shadow-lg"
-                  style={{
-                    background: "linear-gradient(to right, #d35400, #f1c40f)",
-                  }}
-                >
+                {/* Kept rounded-full for the badge as it's a round indicator */}
+                <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-background text-sm font-semibold shadow-lg bg-gradient-to-r from-primary to-secondary">
                   {review.rating} ★
                 </div>
               </div>
 
               <div className="p-5">
-                <h3
-                  className="text-xl font-bold mb-2"
-                  style={{ color: "#d35400" }}
-                >
+                <h3 className="text-lg md:text-xl font-bold mb-2 text-primary">
                   {review.foodName}
                 </h3>
 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Store className="w-5 h-5" style={{ color: "#f1c40f" }} />
+                  <div className="flex items-center gap-2 text-text">
+                    <Store className="w-5 h-5 text-secondary" />
                     <span className="font-medium">{review.restaurantName}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="w-5 h-5" style={{ color: "#f1c40f" }} />
+                  <div className="flex items-center gap-2 text-neutral">
+                    <MapPin className="w-5 h-5 text-secondary" />
                     <span className="text-sm">{review.location}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-neutral/20">
                   <div className="flex items-center gap-2">
                     <img
                       src={review.user_photo}
                       alt={review.user_name}
                       className="w-10 h-10 rounded-full border-2 border-primary object-cover"
                     />
-                    <span className="text-sm text-gray-700 font-medium">
+                    <span className="text-sm text-text font-medium">
                       {review.user_name}
                     </span>
                   </div>
                 </div>
 
-                <div
-                  className="flex items-center gap-1 mb-4"
-                  style={{ color: "#f1c40f" }}
-                >
+                <div className="flex items-center gap-1 mb-4">
                   {renderStars(review.rating)}
                 </div>
 
                 <button
                   onClick={() => handleViewDetails(review._id)}
-                  className="w-full py-2.5 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5"
-                  style={{
-                    background: "linear-gradient(to right, #d35400, #f1c40f)",
-                    color: "white",
-                  }}
+                  className="w-full py-2.5 rounded-md font-semibold transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5 bg-gradient-to-r from-primary to-secondary text-background"
                 >
                   View Details
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="text-center">
           <button
             onClick={handleShowAll}
-            className="px-8 py-3 font-semibold rounded-lg border-2 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 bg-white"
-            style={{ borderColor: "#d35400", color: "#d35400" }}
+            className="px-8 py-3 font-semibold rounded-md border-2 border-primary text-primary hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 bg-background"
           >
             Show All Reviews →
           </button>

@@ -1,341 +1,379 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
-  MdRestaurant,
-  MdLocationOn,
-  MdImage,
-  MdRateReview,
-  MdStar,
-  MdFastfood,
-} from "react-icons/md";
+  HiOutlinePhotograph,
+  HiOutlineStar,
+  HiOutlineLocationMarker,
+  HiOutlineChatAlt2,
+  HiOutlineOfficeBuilding,
+} from "react-icons/hi";
+import { IoFastFoodOutline } from "react-icons/io5";
 import { FaUtensils } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import AuthContext from "../contexts/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import { axiosInstance } from "../contexts/axiosInstance";
 import axios from "axios";
 
 const AddReview = () => {
+  const cloudName = import.meta.env.VITE_cloudinary_cloud;
+  const preset = import.meta.env.VITE_preset;
+  const [imagePreview, setImagePreview] = useState(null);
+
   useEffect(() => {
-    document.title = "ADD REVIEW";
+    document.title = "ADD REVIEW - Local Food Lovers";
   }, []);
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     watch,
     reset,
   } = useForm();
 
   const { user } = useContext(AuthContext);
-  const [imagePreview, setImagePreview] = useState(null);
 
   const watchRating = watch("rating", "");
-  const watchFoodImage = watch("foodImage", "");
+  const watchPhoto = watch("photo");
 
-  const addReview = async (formData) => {
-    const res = await axios.post(
-      "https://local-food-lovers.onrender.com/insert-new-review",
-      formData
-    );
-    if (!res.data.success) {
-      throw new Error("Post request error");
+  // Preview image when file changes
+  useEffect(() => {
+    if (watchPhoto && watchPhoto.length > 0) {
+      const file = watchPhoto[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
     }
-    return res.data;
-  };
+  }, [watchPhoto]);
 
-  const { mutate } = useMutation({
-    mutationFn: addReview,
-    onSuccess: (res) => {
-      console.log(res.message);
-      Swal.fire({
-        title: "Review added ",
-        icon: "success",
-        draggable: true,
-      });
-      reset();
+  // Mutation for uploading image to Cloudinary
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", preset);
+
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        formData
+      );
+
+      return response.data.secure_url;
     },
     onError: (error) => {
-      console.log("Error: ", error.message);
+      console.error("Image upload error:", error);
       Swal.fire({
-        title: "Failed to add review",
-        text: error.message,
+        title: "Image Upload Failed",
+        text: "Could not upload image. Please try again.",
         icon: "error",
-        draggable: true,
+        confirmButtonColor: "var(--primary)",
       });
     },
   });
 
-  useEffect(() => {
-    setImagePreview(watchFoodImage);
-  }, [watchFoodImage]);
+  // Mutation for submitting review to backend
+  const submitReviewMutation = useMutation({
+    mutationFn: async (reviewData) => {
+      console.log("Submitting review data:", reviewData);
 
-  const onSubmit = (data) => {
-    const finalData = {
-      ...data,
-      user_email: user?.email,
-      user_name: user?.displayName,
-      user_photo: user?.photoURL || "",
-      created_at: new Date().toISOString(),
-    };
-    console.log("Final Data:", finalData);
+      const response = await axiosInstance.post(
+        "/insert-new-review",
+        reviewData
+      );
 
-    // try {
-    //   const response = await fetch("http://localhost:5000/insert-new-review", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(finalData),
-    //   });
-    //   const result = await response.json();
-    //   console.log("Success:", result);
-    //   reset();
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // }
+      console.log("Backend response:", response.data);
 
-    mutate(finalData);
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to submit review");
+      }
+
+      return response.data;
+    },
+    onSuccess: () => {
+      Swal.fire({
+        title: "Review Served!",
+        text: "Thanks for sharing your taste.",
+        icon: "success",
+        confirmButtonColor: "var(--primary)",
+      });
+      reset();
+      setImagePreview(null);
+    },
+    onError: (error) => {
+      console.error("Review submission error:", error);
+      Swal.fire({
+        title: "Submission Failed",
+        text: error.message || "Could not submit review. Please try again.",
+        icon: "error",
+        confirmButtonColor: "var(--primary)",
+      });
+    },
+  });
+
+  // Handle form submission
+  const onSubmit = async (data) => {
+    try {
+      console.log("Form submitted with data:", data);
+
+      let foodImage = "";
+
+      // Step 1: Upload image to Cloudinary if photo exists
+      if (data.photo && data.photo.length > 0) {
+        console.log("Uploading image to Cloudinary...");
+        foodImage = await uploadImageMutation.mutateAsync(data.photo[0]);
+        console.log("Image uploaded successfully:", foodImage);
+      }
+
+      // Step 2: Prepare review data matching the exact structure
+      const reviewData = {
+        foodName: data.foodName,
+        restaurantName: data.restaurantName,
+        location: data.location,
+        foodImage: foodImage, // Cloudinary URL or empty string
+        rating: data.rating, // Keep as string to match structure
+        shortReview: data.shortReview,
+        detailedReview: data.detailedReview,
+        user_email: user?.email || "",
+        user_name: user?.displayName || "",
+        user_photo: user?.photoURL || "",
+        created_at: new Date().toISOString(),
+      };
+
+      console.log("Prepared review data:", reviewData);
+
+      // Step 3: Submit review to backend
+      await submitReviewMutation.mutateAsync(reviewData);
+    } catch (error) {
+      console.error("Error in submission process:", error);
+      // Error handling is done in mutation's onError
+    }
   };
 
   const renderStars = (rating) => {
-    const stars = [];
     const numRating = parseFloat(rating) || 0;
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <MdStar
-          key={i}
-          className={`text-2xl ${
-            i <= numRating ? "text-[#f1c40f]" : "text-gray-300"
-          }`}
-        />
-      );
-    }
-    return stars;
+    return [...Array(5)].map((_, i) => (
+      <HiOutlineStar
+        key={i}
+        className={`text-xl ${
+          i < numRating ? "text-secondary fill-secondary" : "text-neutral/30"
+        }`}
+      />
+    ));
   };
 
+  const isSubmitting =
+    uploadImageMutation.isPending || submitReviewMutation.isPending;
+
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#fff8f0] via-[#fffdf5] to-[#fff4e1]">
-      <div className="max-w-4xl mx-auto mb-8 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="p-4 rounded-full shadow-lg bg-gradient-to-r from-[#d35400] to-[#f1c40f]">
-            <FaUtensils className="text-5xl text-white" />
+    <div className="min-h-screen bg-background py-12 px-4">
+      {/* Header Section */}
+      <div className="max-w-3xl mx-auto mb-10 text-center">
+        <div className="flex justify-center mb-6">
+          <div className="p-5 bg-gradient-to-tr from-primary to-secondary rounded-md shadow-2xl rotate-3">
+            <FaUtensils className="text-4xl text-background" />
           </div>
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold mb-3 text-[#d35400]">
-          Share Your Food Experience
+        <h1 className="text-2xl font-black text-text mb-2 tracking-tighter uppercase italic">
+          Share Your <span className="text-primary">Experience</span>
         </h1>
-        <p className="text-gray-700 text-lg">
-          Help fellow food lovers discover amazing dishes and restaurants
+        <p className="text-base text-neutral font-medium max-w-lg mx-auto leading-relaxed">
+          Join the community in spotlighting the best local flavors and hidden
+          gems.
         </p>
       </div>
 
-      {/* Form */}
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-          {/* gradient edge bar */}
-          <div className="h-3 bg-gradient-to-r from-[#d35400] to-[#f1c40f]"></div>
+      {/* Form Container */}
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-background rounded-md shadow-2xl overflow-hidden border border-neutral/10">
+          <div className="h-2 bg-gradient-to-r from-primary to-secondary"></div>
 
-          <div className="p-8 md:p-12">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Food Name */}
-                <div className="group">
-                  <label className="flex items-center gap-2 font-semibold mb-2 text-gray-800">
-                    <MdFastfood className="text-xl text-[#d35400]" />
-                    Food Name
-                  </label>
-                  <input
-                    type="text"
-                    {...register("foodName", {
-                      required: "Food name is required",
-                    })}
-                    placeholder="e.g. Chicken Biryani"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#d35400] transition-all duration-200"
-                  />
-                  {errors.foodName && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.foodName.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Restaurant Name */}
-                <div className="group">
-                  <label className="flex items-center gap-2 font-semibold mb-2 text-gray-800">
-                    <MdRestaurant className="text-xl text-[#d35400]" />
-                    Restaurant Name
-                  </label>
-                  <input
-                    type="text"
-                    {...register("restaurantName", {
-                      required: "Restaurant name is required",
-                    })}
-                    placeholder="e.g. Spice Garden"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#d35400] transition-all duration-200"
-                  />
-                  {errors.restaurantName && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.restaurantName.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="group">
-                <label className="flex items-center gap-2 font-semibold mb-2 text-gray-800">
-                  <MdLocationOn className="text-xl text-[#d35400]" />
-                  Location
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="p-8 md:p-12 space-y-8"
+          >
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Food Name */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-text mb-2">
+                  <IoFastFoodOutline className="text-primary text-lg" />
+                  Food Name
                 </label>
                 <input
                   type="text"
-                  {...register("location", {
-                    required: "Location is required",
+                  {...register("foodName", {
+                    required: "Food name is required",
                   })}
-                  placeholder="e.g. Dhanmondi, Dhaka"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#d35400] transition-all duration-200"
+                  placeholder="e.g. Classic Beef Burger"
+                  className="w-full px-4 py-3 bg-neutral/5 border border-neutral/20 rounded-md focus:outline-none focus:border-primary transition-all text-base font-medium"
                 />
-                {errors.location && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.location.message}
+                {errors.foodName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.foodName.message}
                   </p>
                 )}
               </div>
 
-              {/* Food Image URL */}
-              <div className="group">
-                <label className="flex items-center gap-2 font-semibold mb-2 text-gray-800">
-                  <MdImage className="text-xl text-[#d35400]" />
-                  Food Image URL
+              {/* Restaurant Name */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-text mb-2">
+                  <HiOutlineOfficeBuilding className="text-primary text-lg" />
+                  Restaurant
                 </label>
                 <input
-                  type="url"
-                  {...register("foodImage", {
-                    required: "Food image URL is required",
-                    pattern: {
-                      value: /^https?:\/\/.+/,
-                      message: "Please enter a valid URL",
-                    },
+                  type="text"
+                  {...register("restaurantName", {
+                    required: "Restaurant name is required",
                   })}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#f1c40f] transition-all duration-200"
+                  placeholder="e.g. The Gourmet Hub"
+                  className="w-full px-4 py-3 bg-neutral/5 border border-neutral/20 rounded-md focus:outline-none focus:border-primary transition-all text-base font-medium"
                 />
-                {errors.foodImage && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.foodImage.message}
+                {errors.restaurantName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.restaurantName.message}
                   </p>
                 )}
-                {watchFoodImage && !errors.foodImage && (
-                  <div className="mt-4 rounded-xl overflow-hidden border-2 border-gray-200">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-48 object-cover"
-                      onError={(e) => (e.target.style.display = "none")}
-                    />
-                  </div>
-                )}
               </div>
+            </div>
 
-              {/* Star Rating */}
-              <div className="bg-gradient-to-br from-[#fff3e0] to-[#fff9e6] p-6 rounded-2xl border-2 border-[#fbe7c6]">
-                <label className="flex items-center gap-2 font-semibold mb-3 text-gray-800">
-                  <MdStar className="text-xl text-[#f1c40f]" />
-                  Rate Your Experience (1–5)
-                </label>
-                <div className="flex items-center gap-4">
-                  <input
-                    type="number"
-                    {...register("rating", {
-                      required: "Rating is required",
-                      min: { value: 1, message: "Min rating is 1" },
-                      max: { value: 5, message: "Max rating is 5" },
-                    })}
-                    min="1"
-                    max="5"
-                    step="0.5"
-                    className="w-24 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#f1c40f] transition-all duration-200 text-center text-lg font-bold text-[#d35400]"
+            {/* Location */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-text mb-2">
+                <HiOutlineLocationMarker className="text-primary text-lg" />
+                Location
+              </label>
+              <input
+                type="text"
+                {...register("location", { required: "Location is required" })}
+                placeholder="e.g. Banani, Dhaka"
+                className="w-full px-4 py-3 bg-neutral/5 border border-neutral/20 rounded-md focus:outline-none focus:border-primary transition-all text-base font-medium"
+              />
+              {errors.location && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.location.message}
+                </p>
+              )}
+            </div>
+
+            {/* Food Image Upload */}
+            <div className="w-full">
+              <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-text mb-2">
+                <HiOutlinePhotograph className="text-primary text-lg" />
+                Photo (Optional)
+              </label>
+              <div className="relative">
+                <input
+                  id="photo"
+                  {...register("photo")}
+                  type="file"
+                  accept="image/*"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                 file:rounded-lg file:text-sm file:border-0
+                 file:bg-white file:text-gray-700
+                 hover:file:bg-primary hover:file:text-white
+                 transition-all duration-300 cursor-pointer"
+                />
+              </div>
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="mt-4">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-48 object-cover rounded-md border border-neutral/20"
                   />
-                  <div className="flex gap-1">{renderStars(watchRating)}</div>
                 </div>
-                {errors.rating && (
-                  <p className="text-red-500 text-sm mt-2">
-                    {errors.rating.message}
-                  </p>
-                )}
-              </div>
+              )}
+            </div>
 
-              {/* Short Review */}
-              <div className="group">
-                <label className="flex items-center gap-2 font-semibold mb-2 text-gray-800">
-                  <MdRateReview className="text-xl text-[#d35400]" />
-                  Quick Review{" "}
-                  <span className="text-sm font-normal text-gray-500">
-                    (One-liner)
-                  </span>
+            {/* Rating Section */}
+            <div className="p-6 bg-neutral/5 rounded-md border border-neutral/10">
+              <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-text mb-4">
+                <HiOutlineStar className="text-secondary text-lg" />
+                Your Rating (1-5)
+              </label>
+              <div className="flex items-center gap-8">
+                <input
+                  type="number"
+                  step="0.5"
+                  {...register("rating", {
+                    required: "Rating is required",
+                    min: { value: 1, message: "Minimum rating is 1" },
+                    max: { value: 5, message: "Maximum rating is 5" },
+                  })}
+                  className="w-24 px-4 py-3 bg-background border-2 border-primary rounded-md text-center font-black text-primary text-lg shadow-inner"
+                />
+                <div className="flex gap-1">{renderStars(watchRating)}</div>
+              </div>
+              {errors.rating && (
+                <p className="text-red-500 text-xs mt-2">
+                  {errors.rating.message}
+                </p>
+              )}
+            </div>
+
+            {/* Review Text Areas */}
+            <div className="space-y-8">
+              <div>
+                <label className="text-sm font-black uppercase tracking-widest text-text mb-2 block">
+                  Quick Summary
                 </label>
-                <textarea
+                <input
                   {...register("shortReview", {
                     required: "Short review is required",
-                    maxLength: {
-                      value: 150,
-                      message: "Keep it under 150 characters",
-                    },
                   })}
-                  rows="2"
-                  placeholder="e.g. Absolutely delicious! Best biryani in town."
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#d35400] transition-all duration-200 resize-none"
-                ></textarea>
+                  placeholder="Summarize the experience in one line..."
+                  className="w-full px-4 py-3 bg-neutral/5 border border-neutral/20 rounded-md focus:outline-none focus:border-primary text-base font-medium italic"
+                />
                 {errors.shortReview && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors.shortReview.message}
                   </p>
                 )}
               </div>
 
-              {/* Detailed Review */}
-              <div className="bg-gradient-to-br from-[#fff3e0] to-[#fff9e6] p-6 rounded-2xl border-2 border-[#fbe7c6]">
-                <label className="flex items-center gap-2 font-semibold mb-3 text-gray-800">
-                  <MdRateReview className="text-xl text-[#d35400]" />
-                  Detailed Review{" "}
-                  <span className="text-sm font-normal text-gray-500">
-                    (Share your full experience)
-                  </span>
+              <div>
+                <label className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-text mb-2">
+                  <HiOutlineChatAlt2 className="text-primary text-lg" />
+                  Full Experience
                 </label>
                 <textarea
                   {...register("detailedReview", {
-                    minLength: {
-                      value: 50,
-                      message: "Should be at least 50 characters",
-                    },
+                    required: "Detailed review is required",
                   })}
-                  rows="6"
-                  placeholder="Tell us about the taste, service, presentation, and what made it special..."
-                  className="w-full px-4 py-3 border-2 border-white rounded-xl focus:outline-none focus:border-[#f1c40f] transition-all duration-200 resize-none shadow-sm"
+                  rows="5"
+                  placeholder="How was the flavor? The service? The atmosphere? Be as detailed as possible..."
+                  className="w-full px-4 py-3 bg-neutral/5 border border-neutral/20 rounded-md focus:outline-none focus:border-primary text-base font-medium resize-none leading-relaxed"
                 ></textarea>
                 {errors.detailedReview && (
-                  <p className="text-red-500 text-sm mt-2">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors.detailedReview.message}
                   </p>
                 )}
               </div>
+            </div>
 
-              {/* Submit */}
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-[#d35400] to-[#f1c40f] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  <FaUtensils className="text-xl" />
-                  {isSubmitting ? "Submitting..." : "Share Your Review"}
-                </button>
-              </div>
-            </form>
-          </div>
+            {/* Final CTA */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-4 bg-gradient-to-r from-primary to-secondary text-background rounded-md font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FaUtensils className="text-lg" />
+                {uploadImageMutation.isPending
+                  ? "Uploading Image..."
+                  : submitReviewMutation.isPending
+                  ? "Submitting Review..."
+                  : "Submit Review"}
+              </button>
+            </div>
+          </form>
         </div>
-
-        <p className="text-center text-gray-600 mt-6 text-sm">
-          🍽️ Thank you for contributing to our food-loving community!
-        </p>
       </div>
     </div>
   );
